@@ -30,6 +30,7 @@ class HomeController extends Controller
     	{
     		$filename = $this->convert_vid($request);
     	}
+    	dd($filename);
     	return $filename;
     }
 
@@ -48,10 +49,15 @@ class HomeController extends Controller
     	$file_url = 'img/'.$temp_folder;
 
     	$thumb_filename = 'thumb_'.$filename;
-		
+		return $file_url;
 		$new_name = $request->input('name').'.'.$request->input('file_target');
+		
+//		$new_img = 
 		// open an image file
-		$img = Image::make($file_url)->encode($request->file_target);
+		//$new_img = @imagecreatefromjpeg($file_url);
+		//$new_img = imagecreatefromstring($file_url);
+		$img = imagetruecolortopalette($request->file('input_file'), true, 4);
+		//$img = Image::make($file_url)->encode($request->file_target);
 		//$img->fit(300);
 		$img->save($public_folder.'/'.$new_name);
 
@@ -65,6 +71,6 @@ class HomeController extends Controller
 
     private function convert_vid($request)
     {
-    	
+
     }
 }
