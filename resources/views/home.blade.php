@@ -7,36 +7,59 @@
 <body>
 	<form action="{{url('/convert')}}" method="POST" enctype="multipart/form-data">
 		{{csrf_field()}}
+		<div class="row">
+			<div class="col-md-12 form-container">
+                <label>Nama File</label><br>
+                <input type="text" class="form-control" placeholder="Masukkan nama File yang diinginkan" name="name">
+            </div>
+            <div class="col-md-12 form-container">
+            	<label>Tipe File</label><br>
+            	<select id="file_type" name="file_type" class="selectpicker" onchange="set_target()">
+            		<option value="img">Image</option>
+					<option value="snd">Sound</option>
+					<option value="vid">Video</option>		
+            	</select>
+            </div>
+            <div class="col-md-12 form-container">
+            	<label>Input File</label>
+            	<input type="file" name="input_file" class="form-control">
+            </div>
+            <div class="col-md-12 form-container">
+            	<label>Tipe File</label><br>
+            	<select class="selectpicker" name="file_target" id="file_target">
+    				<option value="jpg">JPG</option>
+					<option value="png">PNG</option>
+					<option value="gif">GIF</option>
+					<option value="tif">TIF</option>
+					<option value="bmp">BMP</option>
+					<option value="ico">ICO</option>
+					<option value="webp">WEBP</option>
+					<option value="psd">PSD</option>		
+            	</select>
+            </div>
+			<div id="conversion_var">
+				<div class="col-md-12 form-container row">
+					<label>Resolution</label>
+					<div class="col-md-6">
+						<input type="text" name="width_reso" placeholder="Width Resolution">
+					</div>
+					<div class="col-md-6">
+						<input type="text" name="height_reso" placeholder="Height Resolution">
+					</div>
+				</div>
+				<div class="col-md-12 form-container">
+					<label>Color Depth</label>
+					<input type="text" name="col_depth" placeholder="Image's Color Depth, e.g : 8 / 256/ 4">
+				</div>
+				<div class="col-md-12 form-container">
+					<label>Conversion Rate</label>
+					<input type="number" name="conv_rate" placeholder="Conversion/Compression rate in percent">
+				</div>
+			</div>
 
-		<div class="form-control">
-			<input type="text" name="name" placeholder="Masukkan Nama file disini">
-		</div>
-		<div class="form-control">
-		<select id="file_type" name="file_type" onchange="set_target();">
-			<option value="img">Image</option>
-			<option value="snd">Sound</option>
-			<option value="vid">Video</option>
-		</select>
-		</div>
-		<br><br><br>
-		<div class="form-control">
-		<input type="file" name="input_file">
-		</div>
-		<br><br>
-		<div class="form-control">
-			<select name="file_target" id="file_target">
-				<option value="jpg">JPG</option>
-				<option value="png">PNG</option>
-				<option value="gif">GIF</option>
-				<option value="tif">TIF</option>
-				<option value="bmp">BMP</option>
-				<option value="ico">ICO</option>
-				<option value="webp">WEBP</option>
-				<option value="psd">PSD</option>				
-			</select>
-		</div>
 		<br><br>
 		<button type="submit" class="btn btn-success">Convert!!</button>
+		</div>
 	</form>
 </body>
 	<script type="text/javascript" src="js/jquery-3.2.1.min.js"></script>
@@ -47,18 +70,73 @@
 			{
 				code = `<option value="bmp">Bitmap</option><option value="sound">Sound</option>
 						<option value="vid">Video</option>`;
+				var_code = `<div class="col-md-12 form-container row">
+					<label>Resolution</label>
+						<div class="col-md-6">
+							<input type="text" name="width_reso" placeholder="Width Resolution">
+						</div>
+						<div class="col-md-6">
+							<input type="text" name="height_reso" placeholder="Height Resolution">
+						</div>
+					</div>
+					<div class="col-md-12 form-container">
+						<label>Color Depth</label>
+						<input type="text" name="col_depth" placeholder="Image's Color Depth, e.g : 8 / 256/ 4">
+					</div>
+					<div class="col-md-12 form-container">
+						<label>Conversion Rate</label>
+						<input type="number" name="conv_rate" placeholder="Conversion/Compression rate in percent">
+					</div>`;
 			}
 			else if(type_src == 'snd')
 			{
-				code = `<option value="flac">FLAC</option><option value="alac">ALAC</option>
-						`;
+				code = `<option value="wav">WAV</option><option value="mp3">MP3</option>
+						<option value="aac">AAC</option>`;
+				var_code = `<div class="col-md-12 form-container">
+					<label>Bitrate</label>
+							<input type="text" name="bitrate" placeholder="Audio Bitrate" class="form-control">
+					</div>
+					<div class="col-md-12 form-container">
+						<label>Channel</label>
+						<input type="text" name="channel" placeholder="Audio Channel">
+					</div>
+					<div class="col-md-12 form-container">
+						<label>Audio Sample Rate</label>
+						<input type="text" name="sample_rate" placeholder="Audio Sample Rate">
+					</div>`;
 			}
 			else
 			{
-				code = `<option value="img">Image</option><option value="sound">Sound</option>
-						<option value="vid">Video</option>`;
+				code = `<option value="wmv">WMV</option><option value="alac">MP4</option>
+						<option value="ffmpeg">FFMPEG</option><option value="wav">WAV</option>`;
+				var_code = `<div class="col-md-12 form-container row">
+					<label>Frame Size</label>
+						<div class="col-md-6">
+							<input type="text" name="frame_width" placeholder="Frame Width">
+						</div>
+						<div class="col-md-6">
+							<input type="text" name="frame_height" placeholder="Frame Height">
+						</div>
+					</div>
+					<div class="col-md-12 form-container">
+					<label>Bitrate</label>
+							<input type="text" name="bitrate" placeholder="Audio Bitrate" class="form-control">
+					</div>
+					<div class="col-md-12 form-container">
+					<label>Frame Rate</label>
+						<input type="text" name="frame_rate" placeholder="Frame Rate" class="form-control">
+					</div>
+					<div class="col-md-12 form-container">
+						<label>Channel</label>
+						<input type="text" name="channel" placeholder="Audio Channel">
+					</div>
+					<div class="col-md-12 form-container">
+						<label>Audio Sample Rate</label>
+						<input type="text" name="sample_rate" placeholder="Audio Sample Rate">
+					</div>`;
 			}
 			$('#file_target').html(code);
+			$('#conversion_var').html(var_code);
 		}
 	</script>
 </html>
