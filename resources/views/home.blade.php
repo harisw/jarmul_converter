@@ -109,7 +109,7 @@
 			else
 			{
 				code = `<option value="wmv">WMV</option><option value="webm">WEBM</option>
-						<option value="ogg">OGG</option><option value="x264">X264</option>`;
+						<option value="ogg">OGG</option><option value="x264">MP4(x264)</option>`;
 				var_code = `<div class="col-md-12 form-container row">
 					<label>Frame Size</label>
 						<div class="col-md-6">
@@ -121,7 +121,7 @@
 					</div>
 					<div class="col-md-12 form-container">
 					<label>Bitrate</label>
-							<input type="text" name="bitrate" placeholder="Audio Bitrate" class="form-control">
+							<input type="text" name="bitrate" placeholder="Bitrate" class="form-control">
 					</div>
 					<div class="col-md-12 form-container">
 					<label>Frame Rate</label>

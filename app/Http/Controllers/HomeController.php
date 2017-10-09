@@ -21,17 +21,17 @@ class HomeController extends Controller
     	$file_type = $request->input('file_type');
     	if($file_type == 'img')
     	{
-    		$filename = $this->convert_img($request);
+    		$convert_result = $this->convert_img($request);
     	}
     	else if($file_type == 'snd')
     	{
-    		$filename = $this->convert_snd($request);
+    		$convert_result = $this->convert_snd($request);
     	}
     	else
     	{
-    		$filename = $this->convert_vid($request);
+    		$convert_result = $this->convert_vid($request);
     	}
-    	return $this->result($filename);
+    	return $this->download($convert_result[0], $convert_result[1]);
     }
 
     private function convert_img($request)
@@ -109,17 +109,71 @@ class HomeController extends Controller
         $format->setAudioChannels($request->input('channel'))
                ->setAudioKiloBitrate($request->input('bitrate'));
         $audio->save($format, $public_folder.'/'.$new_name);
-        return public_path('aud/results/'.$new_name);
+        $url = public_path('aud/ results/');
+        $data = [$url, $new_name];
+        return $data;
     }
 
     private function convert_vid($request)
     {
+        $temp_folder = 'results';
+        $public_folder = public_path('vid/'.$temp_folder);
 
+        $ext = $request->input_file->extension();
+        $filename = str_replace(' ', '_', $request->input('name')).'.'.$ext;
+        $temp_folder = $request->file('input_file')->storeAs($temp_folder, $filename);
+
+        //move file
+        $upload = $request->file('input_file')->move($public_folder, $temp_folder);
+        $image = $request->file('input_file');
+        $file_url = 'vid/'.$temp_folder;
+
+        $new_name = $request->input('name').'.'.$request->input('file_target');
+        
+        switch ($request->input('file_target')) {
+            case 'wmv':
+                $format = new FFMpeg\Format\Video\WMV();
+                break;
+            case 'webm':
+                $format = new FFMpeg\Format\Video\WEBM();
+                break;
+            case 'ogg':
+                $format = new FFMpeg\Format\Video\OGG();
+                break;
+            case 'x264':
+                $format = new FFMpeg\Format\Video\X264();
+                break;
+        }
+        $hframe = $request->input('frame_width');
+        $wframe = $request->input('frame_height');
+        $bitrate = $request->input('bitrate');
+        $framerate = $request->input('frame_rate');
+        $channel = $request->input('channel');
+        $samplerate = $request->input('sample_rate');
+
+        $ffmpeg = FFMpeg\FFMpeg::create();
+        $video = $ffmpeg->open($file_url);
+        if($hframe)
+            $video->filters()->resize(new FFMpeg\Coordinate\Dimension($hframe, $wframe));
+        if($framerate)
+            $video->filters()->framerate(new FFMpeg\Coordinate\FrameRate($framerate), 3);
+        $video->filters()->synchronize();
+
+        $format->on('progress', function($video, $format, $percentage){
+            echo "$percentage % transcoded";
+        });
+        if($bitrate)
+            $format->setKiloBitrate($bitrate);
+        if($channel)
+            $format->setAudioChannels($channel);
+        $video->save($format, $public_folder.'/'.$new_name);
+        $url = public_path('vid/results/');
+        $data = [$url, $new_name];
+        return $data;
     }
 
-    public function result($file_url)
+    public function download($fileurl, $filename)
     {
-        $data['file_url'] = $file_url;
-        return view('result', $data);
+    
     }
 }
