@@ -14,3 +14,5 @@
 Route::get('/', 'HomeController@index');
 
 Route::post('/convert', 'HomeController@convert');
+
+Route::get('/result', 'HomeController@result');

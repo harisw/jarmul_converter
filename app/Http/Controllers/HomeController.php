@@ -109,7 +109,7 @@ class HomeController extends Controller
         $format->setAudioChannels($request->input('channel'))
                ->setAudioKiloBitrate($request->input('bitrate'));
         $audio->save($format, $public_folder.'/'.$new_name);
-        $url = public_path('aud/ results/');
+        $url = 'aud\\results\\';
         $data = [$url, $new_name];
         return $data;
     }
@@ -167,13 +167,26 @@ class HomeController extends Controller
         if($channel)
             $format->setAudioChannels($channel);
         $video->save($format, $public_folder.'/'.$new_name);
-        $url = public_path('vid/results/');
+        $url = 'vid/results/';
         $data = [$url, $new_name];
         return $data;
     }
 
+    public function result()
+    {
+        return view('result');
+    }
     public function download($fileurl, $filename)
     {
-    
+        $file_path = public_path($fileurl).$filename;
+
+        if(file_exists($file_path))
+        {
+            return \Response::download($file_path, $filename);
+        }
+        else
+        {
+            exit($file_path);
+        }
     }
 }
