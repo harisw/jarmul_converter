@@ -90,8 +90,9 @@
 			}
 			else if(type_src == 'snd')
 			{
+
 				code = `<option value="wav">WAV</option><option value="mp3">MP3</option>
-						<option value="aac">AAC</option>`;
+						<option value="aac">AAC</option><option value="flac">FLAC</option><option value="vorbis">VORBIS</option>`;
 				var_code = `<div class="col-md-12 form-container">
 					<label>Bitrate</label>
 							<input type="text" name="bitrate" placeholder="Audio Bitrate" class="form-control">
@@ -107,8 +108,8 @@
 			}
 			else
 			{
-				code = `<option value="wmv">WMV</option><option value="alac">MP4</option>
-						<option value="ffmpeg">FFMPEG</option><option value="wav">WAV</option>`;
+				code = `<option value="wmv">WMV</option><option value="webm">WEBM</option>
+						<option value="ogg">OGG</option><option value="x264">X264</option>`;
 				var_code = `<div class="col-md-12 form-container row">
 					<label>Frame Size</label>
 						<div class="col-md-6">

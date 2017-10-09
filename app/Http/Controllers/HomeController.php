@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Response;
 use File;
 use Image;
+use FFMpeg;
 
 class HomeController extends Controller
 {
@@ -30,8 +31,7 @@ class HomeController extends Controller
     	{
     		$filename = $this->convert_vid($request);
     	}
-    	dd($filename);
-    	return $filename;
+    	return $this->result($filename);
     }
 
     private function convert_img($request)
@@ -66,11 +66,60 @@ class HomeController extends Controller
 
     private function convert_snd($request)
     {
+        $temp_folder = 'results';
+        $public_folder = public_path('aud/'.$temp_folder);
 
+        $ext = $request->input_file->extension();
+        $filename = str_replace(' ', '_', $request->input('name')).'.'.$ext;
+        $temp_folder = $request->file('input_file')->storeAs($temp_folder, $filename);
+
+        //move file
+        $upload = $request->file('input_file')->move($public_folder, $temp_folder);
+        $image = $request->file('input_file');
+        $file_url = 'aud/'.$temp_folder;
+
+        $new_name = $request->input('name').'.'.$request->input('file_target'); 
+        $ffmpeg = FFMpeg\FFMpeg::create(['timeout' => 3600]);
+        // $ffmpeg = \FFMpeg\FFMpeg::create([
+        //             'ffmpeg.binaries'  => '/usr/local/bin/ffmpeg',
+        //             'ffprobe.binaries' => '/usr/local/bin/ffprobe' 
+        //         ]);
+        $audio = $ffmpeg->open($file_url);
+
+        switch ($request->input('file_target')) {
+               case 'wav':
+                   $format = new FFMpeg\Format\Audio\Wav();
+                   break;
+               case 'aac':
+                   $format = new FFMpeg\Format\Audio\Aac();
+                   break;
+                case 'mp3':
+                    $format = new FFMpeg\Format\Audio\Mp3();
+                    break;
+                case 'flac':
+                    $format = new FFMpeg\Format\Audio\Flac();
+                    break;
+                case 'vorbis':
+                    $format = new FFMpeg\Format\Audio\Vorbis();
+                    break;
+        }
+        $format->on('progress', function ($audio, $format, $percentage) {
+            echo "$percentage % transcoded";
+        });
+        $format->setAudioChannels($request->input('channel'))
+               ->setAudioKiloBitrate($request->input('bitrate'));
+        $audio->save($format, $public_folder.'/'.$new_name);
+        return public_path('aud/results/'.$new_name);
     }
 
     private function convert_vid($request)
     {
 
+    }
+
+    public function result($file_url)
+    {
+        $data['file_url'] = $file_url;
+        return view('result', $data);
     }
 }
