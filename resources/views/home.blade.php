@@ -71,8 +71,14 @@
 			type_src = document.getElementById('file_type').value;
 			if(type_src == 'img')
 			{
-				code = `<option value="bmp">Bitmap</option><option value="sound">Sound</option>
-						<option value="vid">Video</option>`;
+				code = `<option value="jpg">JPG</option>
+					<option value="png">PNG</option>
+					<option value="gif">GIF</option>
+					<option value="tif">TIF</option>
+					<option value="bmp">BMP</option>
+					<option value="ico">ICO</option>
+					<option value="webp">WEBP</option>
+					<option value="psd">PSD</option>`;
 				var_code = `<div class="col-md-12 form-container row">
 					<label>Resolution</label>
 						<div class="col-md-6">
