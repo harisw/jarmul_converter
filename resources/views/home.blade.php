@@ -25,6 +25,10 @@
             	<input type="file" name="input_file" class="form-control">
             </div>
             <div class="col-md-12 form-container">
+                <label>Format File</label><br>
+                <input type="text" class="form-control" placeholder="Masukkan format File yang anda upload" name="source_ext">
+            </div>
+            <div class="col-md-12 form-container">
             	<label>Tipe File</label><br>
             	<select class="selectpicker" name="file_target" id="file_target">
     				<option value="jpg">JPG</option>
@@ -118,7 +122,7 @@
 			else
 			{
 				code = `<option value="wmv">WMV</option><option value="webm">WEBM</option>
-						<option value="ogg">OGG</option><option value="x264">MP4(x264)</option>`;
+						<option value="ogg">OGG</option><option value="mp4">MP4(x264)</option>`;
 				var_code = `<div class="col-md-12 form-container row">
 					<label>Frame Size</label>
 						<div class="col-md-6">

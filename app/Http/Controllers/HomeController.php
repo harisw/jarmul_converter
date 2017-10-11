@@ -22,16 +22,19 @@ class HomeController extends Controller
     	if($file_type == 'img')
     	{
     		$convert_result = $this->convert_img($request);
+            $format = 'img';
     	}
     	else if($file_type == 'snd')
     	{
     		$convert_result = $this->convert_snd($request);
-    	}
+    	    $format = 'snd';
+        }
     	else
     	{
     		$convert_result = $this->convert_vid($request);
-    	}
-    	return $this->download($convert_result[0], $convert_result[1]);
+    	    $format = 'vid';
+        }
+    	return $this->download($convert_result[0], $convert_result[1], $format);
     }
 
     private function convert_img($request)
@@ -143,7 +146,7 @@ class HomeController extends Controller
         $file_url = 'vid/'.$temp_folder;
 
         $new_name = $request->input('name').'.'.$request->input('file_target');
-        
+        $origin = $request->input('name').'.'.$request->input('source_ext');
         // switch ($request->input('file_target')) {
         //     case 'wmv':
         //         $format = new FFMpeg\Format\Video\WMV();
@@ -158,8 +161,8 @@ class HomeController extends Controller
         //         $format = new FFMpeg\Format\Video\X264();
         //         break;
         // }
-        $hframe = $request->input('frame_width');
-        $wframe = $request->input('frame_height');
+        $wframe = $request->input('frame_width');
+        $hframe = $request->input('frame_height');
         $bitrate = $request->input('bitrate');
         $framerate = $request->input('frame_rate');
         $channel = $request->input('channel');
@@ -167,7 +170,24 @@ class HomeController extends Controller
 
         // $ffmpeg = FFMpeg\FFMpeg::create(['timeout' => 3600]);
         // $video = $ffmpeg->open($file_url);
-        
+        $cmd = 'ffmpeg -i '.$file_url.' ';
+//         if($hframe)
+// //            exec('ffmpeg -i '.$file_url.' -s '.$wframe.'x'.$hframe.' -c:a copy '.$origin);
+//                exec('ffmpeg -i '.$file_url.' -s '.$wframe.'x'.$hframe.' -c:v libx264 '.$new_name);
+//         if($bitrate)
+//             exec('ffmpeg -i '.public_path($origin).' -b:v 1M -b:a '.$bitrate.' '.$origin);
+        if($hframe)
+            $cmd .= '-s '.$wframe.'x'.$hframe.' ';
+        if($framerate)
+            $cmd .= '-r '.$framerate.' ';
+        if($channel)
+            $cmd .= '-ac '.$channel.' ';
+        if($bitrate)
+            $cmd .= '-b:v 1M -b:a '.$bitrate.' ';
+        if($samplerate)
+            $cmd .= '-ar '.$samplerate.' ';
+        $cmd .= '-c:v libx264 '.$new_name;
+        //dd($cmd);
         // try {
         //     if($hframe)
         //         $video->filters()->resize(new FFMpeg\Coordinate\Dimension($hframe, $wframe));
@@ -187,7 +207,8 @@ class HomeController extends Controller
         //     return redirect('/')->with('status', $e);
         // }
         try {
-            exec('ffmpeg -i '.$file_url.' -c:v libx264 '.$new_name);
+            // exec('ffmpeg -i '.public_path($origin).' -c:v libx264 '.$new_name);
+            exec($cmd);
         } catch (Exception $e) {
             return $response->setStatusCode(500, 'Error!');
         }
@@ -200,10 +221,11 @@ class HomeController extends Controller
     {
         return view('result');
     }
-    public function download($fileurl, $filename)
+    public function download($fileurl, $filename, $format)
     {
         $file_path = public_path($fileurl).$filename;
-
+        if($format == 'vid')
+            $file_path = public_path($filename);
         if(file_exists($file_path))
         {
             return \Response::download($file_path, $filename);
