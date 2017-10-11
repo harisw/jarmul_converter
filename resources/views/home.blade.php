@@ -59,9 +59,6 @@
 					<label>Conversion Rate</label>
 					<input type="number" name="conv_rate" placeholder="Conversion/Compression rate in percent">
 				</div>
-				<div class="checkbox col-md-12 form-container">
-  					<label><input name="greyscale" type="checkbox" value="">Greyscale</label>
-				</div>
 			</div>
 
 		<br><br>
