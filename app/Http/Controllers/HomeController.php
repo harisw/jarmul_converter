@@ -8,6 +8,7 @@ use Illuminate\Http\Response;
 use File;
 use Image;
 use FFMpeg;
+use Imagick;
 
 class HomeController extends Controller
 {
@@ -62,15 +63,29 @@ class HomeController extends Controller
 		//$new_img = @imagecreatefromjpeg($file_url);
 		//$new_img = imagecreatefromstring($file_url);
 		//$img = imagetruecolortopalette($request->file('input_file'), true, 4);
-		$img = Image::make($file_url);
+		//$img = Image::make($file_url);      
+        $imagick = new Imagick(public_path($file_url));  
+        if($rate)
+            $imagick->setImageCompressionQuality($rate);
         if($width && $height)
+            $imagick->thumbnailImage($width, $height, 0, 0);
+        $imagick->setType(\Imagick::IMGTYPE_TRUECOLOR);
+        if($color)
+            $imagick->setImageDepth($color);
+        //header("Content-Type: image/jpg");
+        //echo $imagick;
+        //$bmp = imagecreatefromjpeg($file_url);
+        
+        /*if($width && $height)
             $img->resize($width, $height);
+            //$bmp->resize($width, $height);
         if($greyscale)
             $img->greyscale();
         if($rate)        
-            $img->encode($request->file_target, $rate);
+            $img->encode($request->file_target, $rate);*/
 		//$img->fit(300);
-		$img->save($public_folder.'/'.$new_name);
+        //imagewbmp($bmp, $public_folder.'/'.$request->input('name') . '.bmp');
+		$imagick->writeImage($public_folder.'/'.$new_name);
 
     	$url = 'img\\results\\';
         $data = [$url, $new_name];
