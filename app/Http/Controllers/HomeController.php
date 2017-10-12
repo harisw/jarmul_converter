@@ -111,18 +111,15 @@ class HomeController extends Controller
 
         $new_name = $request->input('name').'.'.$request->input('file_target'); 
         $ffmpeg = FFMpeg\FFMpeg::create(['timeout' => 3600]);
-        // $ffmpeg = \FFMpeg\FFMpeg::create([
-        //             'ffmpeg.binaries'  => '/usr/local/bin/ffmpeg',
-        //             'ffprobe.binaries' => '/usr/local/bin/ffprobe' 
-        //         ]);
         $audio = $ffmpeg->open($file_url);
-
-        switch ($request->input('file_target')) {
+        $target = $request->input('file_target');
+        switch ($target) {
                case 'wav':
                    $format = new FFMpeg\Format\Audio\Wav();
                    break;
                case 'aac':
-                   $format = new FFMpeg\Format\Audio\Aac();
+                   $cmd = 'ffmpeg -i '.$file_url.' -c:a libvo_aacenc '.$request->input('name').'.m4a';
+                   $format = '';
                    break;
                 case 'mp3':
                     $format = new FFMpeg\Format\Audio\Mp3();
@@ -130,19 +127,32 @@ class HomeController extends Controller
                 case 'flac':
                     $format = new FFMpeg\Format\Audio\Flac();
                     break;
-                case 'vorbis':
-                    $format = new FFMpeg\Format\Audio\Vorbis();
+                case 'ogg':
+                    $cmd = 'ffmpeg -i '.$file_url.' -c:a libvorbis '.$request->input('name').'.ogg';
+                    $format = '';
                     break;
         }
-        $format->on('progress', function ($audio, $format, $percentage) {
-            echo "$percentage % transcoded";
-        });
-        $format->setAudioChannels($request->input('channel'))
-               ->setAudioKiloBitrate($request->input('bitrate'));
-        $audio->save($format, $public_folder.'/'.$new_name);
-        $url = 'aud\\results\\';
-        $data = [$url, $new_name];
-        return $data;
+        if($target == 'aac' || $target == 'ogg')
+        {
+            exec($cmd);
+            $url = public_path($new_name);
+            $data = [$url, $new_name];
+            return $data;    
+        }
+        else
+        {
+            $format->on('progress', function ($audio, $format, $percentage) {
+                echo "$percentage % transcoded";
+            });
+            if($request->input('channel'))
+                $format->setAudioChannels($request->input('channel'));
+            if($request->input('bitrate'))
+                $format->setAudioKiloBitrate($request->input('bitrate'));
+            $audio->save($format, $public_folder.'/'.$new_name);
+            $url = 'aud\\results\\';
+            $data = [$url, $new_name];
+            return $data;
+        }
     }
 
     private function convert_vid($request)
@@ -162,20 +172,7 @@ class HomeController extends Controller
 
         $new_name = $request->input('name').'.'.$request->input('file_target');
         $origin = $request->input('name').'.'.$request->input('source_ext');
-        // switch ($request->input('file_target')) {
-        //     case 'wmv':
-        //         $format = new FFMpeg\Format\Video\WMV();
-        //         break;
-        //     case 'webm':
-        //         $format = new FFMpeg\Format\Video\WEBM();
-        //         break;
-        //     case 'ogg':
-        //         $format = new FFMpeg\Format\Video\OGG();
-        //         break;
-        //     case 'x264':
-        //         $format = new FFMpeg\Format\Video\X264();
-        //         break;
-        // }
+
         $wframe = $request->input('frame_width');
         $hframe = $request->input('frame_height');
         $bitrate = $request->input('bitrate');
@@ -183,14 +180,7 @@ class HomeController extends Controller
         $channel = $request->input('channel');
         $samplerate = $request->input('sample_rate');
 
-        // $ffmpeg = FFMpeg\FFMpeg::create(['timeout' => 3600]);
-        // $video = $ffmpeg->open($file_url);
         $cmd = 'ffmpeg -i '.$file_url.' ';
-//         if($hframe)
-// //            exec('ffmpeg -i '.$file_url.' -s '.$wframe.'x'.$hframe.' -c:a copy '.$origin);
-//                exec('ffmpeg -i '.$file_url.' -s '.$wframe.'x'.$hframe.' -c:v libx264 '.$new_name);
-//         if($bitrate)
-//             exec('ffmpeg -i '.public_path($origin).' -b:v 1M -b:a '.$bitrate.' '.$origin);
         if($hframe)
             $cmd .= '-s '.$wframe.'x'.$hframe.' ';
         if($framerate)
@@ -202,27 +192,7 @@ class HomeController extends Controller
         if($samplerate)
             $cmd .= '-ar '.$samplerate.' ';
         $cmd .= '-c:v libx264 '.$new_name;
-        //dd($cmd);
-        // try {
-        //     if($hframe)
-        //         $video->filters()->resize(new FFMpeg\Coordinate\Dimension($hframe, $wframe));
-        //     if($framerate)
-        //         $video->filters()->framerate(new FFMpeg\Coordinate\FrameRate($framerate), 3);
-        // $video->filters()->synchronize();
-
-        // $format->on('progress', function($video, $format, $percentage){
-        //     echo "$percentage % transcoded";
-        // });
-        // if($bitrate)
-        //     $format->setKiloBitrate($bitrate);
-        // if($channel)
-        //     $format->setAudioChannels($channel);
-        // $video->save($format, $public_folder.'/'.$new_name);            
-        // } catch (Exception $e) {
-        //     return redirect('/')->with('status', $e);
-        // }
         try {
-            // exec('ffmpeg -i '.public_path($origin).' -c:v libx264 '.$new_name);
             exec($cmd);
         } catch (Exception $e) {
             return $response->setStatusCode(500, 'Error!');

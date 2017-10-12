@@ -102,7 +102,7 @@
 			{
 
 				code = `<option value="wav">WAV</option><option value="mp3">MP3</option>
-						<option value="aac">AAC</option><option value="flac">FLAC</option><option value="vorbis">VORBIS</option>`;
+						<option value="aac">AAC(M4A)</option><option value="flac">FLAC</option><option value="ogg">OGG</option>`;
 				var_code = `<div class="col-md-12 form-container">
 					<label>Bitrate</label>
 							<input type="text" name="bitrate" placeholder="Audio Bitrate" class="form-control">
@@ -118,8 +118,9 @@
 			}
 			else
 			{
-				code = `<option value="wmv">WMV</option><option value="webm">WEBM</option>
-						<option value="ogg">OGG</option><option value="mp4">MP4(x264)</option>`;
+				code = `<option value="wmv">WMV</option><option value="mkv">MKV</option>
+						<option value="mov">MOV</option><option value="mp4">MP4(x264)</option>
+						<option value="mpeg">MPEG</option>`;
 				var_code = `<div class="col-md-12 form-container row">
 					<label>Frame Size</label>
 						<div class="col-md-6">
