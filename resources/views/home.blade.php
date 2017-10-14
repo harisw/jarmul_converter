@@ -5,6 +5,27 @@
 	<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
 </head>
 <body>
+<nav class="navbar navbar-inverse">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="#">WebSiteName</a>
+    </div>
+    <ul class="nav navbar-nav">
+      <li class="active"><a href="#">Home</a></li>
+      <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Page 1
+        <span class="caret"></span></a>
+        <ul class="dropdown-menu">
+          <li><a href="#">Page 1-1</a></li>
+          <li><a href="#">Page 1-2</a></li>
+          <li><a href="#">Page 1-3</a></li>
+        </ul>
+      </li>
+      <li><a href="#">Page 2</a></li>
+      <li><a href="#">Page 3</a></li>
+    </ul>
+  </div>
+</nav>
 	<form action="{{url('/convert')}}" method="POST" enctype="multipart/form-data">
 		{{csrf_field()}}
 		<div class="row">
@@ -25,13 +46,9 @@
       	<input type="file" name="input_file" class="form-control">
       </div>
       <div class="col-md-12 form-container">
-          <label>Format File</label><br>
-          <input type="text" class="form-control" placeholder="Masukkan format File yang anda upload" name="source_ext">
-      </div>
-      <div class="col-md-12 form-container">
       	<label>Tipe File</label><br>
       	<select class="selectpicker" name="file_target" id="file_target">
-    			<option value="jpg">JPG</option>
+    				<option value="jpg">JPG</option>
 					<option value="png">PNG</option>
 					<option value="gif">GIF</option>
 					<option value="tif">TIF</option>
@@ -113,7 +130,7 @@
 			{
 
 				code = `<option value="wav">WAV</option><option value="mp3">MP3</option>
-						<option value="aac">AAC(M4A)</option><option value="flac">FLAC</option><option value="ogg">OGG</option>`;
+						<option value="m4a">AAC(M4A)</option><option value="flac">FLAC</option><option value="ogg">OGG</option>`;
 				var_code = `<div class="col-md-12 form-container">
 					<label>Bitrate</label>
 							<input type="text" name="bitrate" placeholder="Audio Bitrate" class="form-control">
@@ -124,7 +141,15 @@
 					</div>
 					<div class="col-md-12 form-container">
 						<label>Audio Sample Rate</label>
-						<input type="text" name="sample_rate" placeholder="Audio Sample Rate">
+						<select class="selectpicker" name="sample_rate" id="sample_rate">
+    						<option value="8">8kHz</option>
+							<option value="11">11kHz</option>
+							<option value="22">22kHz</option>
+							<option value="32">32kHz</option>
+							<option value="44">44kHz</option>
+							<option value="48">48kHz</option>
+							<option value="64">64kHz</option>		
+      					</select>					
 					</div>`;
 			}
 			else

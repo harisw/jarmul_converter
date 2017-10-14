@@ -113,46 +113,62 @@ class HomeController extends Controller
         $ffmpeg = FFMpeg\FFMpeg::create(['timeout' => 3600]);
         $audio = $ffmpeg->open($file_url);
         $target = $request->input('file_target');
+        $samplerate = $request->input('sample_rate')*1000;
+        $bitrate = $request->input('bitrate');
+        $channel = $request->input('channel');
         switch ($target) {
                case 'wav':
-                   $format = new FFMpeg\Format\Audio\Wav();
+                   // $format = new FFMpeg\Format\Audio\Wav();
+                  $cmd = 'ffmpeg -i '.$file_url.' -c:a libopus ';
                    break;
-               case 'aac':
-                   $cmd = 'ffmpeg -i '.$file_url.' -c:a libvo_aacenc '.$request->input('name').'.m4a';
+               case 'm4a':
+                   $cmd = 'ffmpeg -i '.$file_url.' -c:a libvo_aacenc ';
                    $format = '';
                    break;
                 case 'mp3':
-                    $format = new FFMpeg\Format\Audio\Mp3();
+                  $cmd = 'ffmpeg -i '.$file_url.' -f mp3 ';
+                    // $format = new FFMpeg\Format\Audio\Mp3();
                     break;
                 case 'flac':
-                    $format = new FFMpeg\Format\Audio\Flac();
+                  $cmd = 'ffmpeg -i '.$file_url.' ';
+                    // $format = new FFMpeg\Format\Audio\Flac();
                     break;
                 case 'ogg':
-                    $cmd = 'ffmpeg -i '.$file_url.' -c:a libvorbis '.$request->input('name').'.ogg';
-                    $format = '';
+                    $cmd = 'ffmpeg -i '.$file_url.' -c:a libvorbis ';
+                    //$format = '';
                     break;
         }
-        if($target == 'aac' || $target == 'ogg')
-        {
+        // if($target == 'aac' || $target == 'ogg')
+//        {
+        if($samplerate)
+            $cmd .= '-ar '.$samplerate.' ';
+        if($bitrate)
+            $cmd .= '-b:a '.$bitrate.'k ';
+        if($channel)
+            $cmd .= '-ac '.$channel.' ';
+        $cmd .= $new_name;
             exec($cmd);
             $url = public_path($new_name);
             $data = [$url, $new_name];
             return $data;    
-        }
-        else
-        {
-            $format->on('progress', function ($audio, $format, $percentage) {
-                echo "$percentage % transcoded";
-            });
-            if($request->input('channel'))
-                $format->setAudioChannels($request->input('channel'));
-            if($request->input('bitrate'))
-                $format->setAudioKiloBitrate($request->input('bitrate'));
-            $audio->save($format, $public_folder.'/'.$new_name);
-            $url = 'aud\\results\\';
-            $data = [$url, $new_name];
-            return $data;
-        }
+  //      }
+        // else
+        // {
+        //     $format->on('progress', function ($audio, $format, $percentage) {
+        //         echo "$percentage % transcoded";
+        //     });
+        //     if($request->input('channel'))
+        //         $format->setAudioChannels($request->input('channel'));
+        //     if($request->input('bitrate'))
+        //         $format->setAudioKiloBitrate($request->input('bitrate'));
+        //         //dd($abc);
+        //     if($samplerate)
+        //         $audio->filters()->resample($samplerate);
+        //     $audio->save($format, $public_folder.'/'.$new_name);
+        //     $url = 'aud\\results\\';
+        //     $data = [$url, $new_name];
+        //     return $data;
+        
     }
 
     private function convert_vid($request)
@@ -211,6 +227,8 @@ class HomeController extends Controller
         $file_path = public_path($fileurl).$filename;
         if($format == 'vid')
             $file_path = public_path($filename);
+        elseif($format == 'snd')
+            $file_path = $fileurl;
         if(file_exists($file_path))
         {
             return \Response::download($file_path, $filename);
