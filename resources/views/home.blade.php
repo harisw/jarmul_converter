@@ -9,29 +9,29 @@
 		{{csrf_field()}}
 		<div class="row">
 			<div class="col-md-12 form-container">
-                <label>Nama File</label><br>
-                <input type="text" class="form-control" placeholder="Masukkan nama File yang diinginkan" name="name">
-            </div>
-            <div class="col-md-12 form-container">
-            	<label>Tipe File</label><br>
-            	<select id="file_type" name="file_type" class="selectpicker" onchange="set_target()">
-            		<option value="img">Image</option>
+        <label>Nama File</label><br>
+        <input type="text" class="form-control" placeholder="Masukkan nama File yang diinginkan" name="name">
+      </div>
+      <div class="col-md-12 form-container">
+      	<label>Tipe File</label><br>
+      	<select id="file_type" name="file_type" class="selectpicker" onchange="set_target()">
+      		<option value="img">Image</option>
 					<option value="snd">Sound</option>
 					<option value="vid">Video</option>		
-            	</select>
-            </div>
-            <div class="col-md-12 form-container">
-            	<label>Input File</label>
-            	<input type="file" name="input_file" class="form-control">
-            </div>
-            <div class="col-md-12 form-container">
-                <label>Format File</label><br>
-                <input type="text" class="form-control" placeholder="Masukkan format File yang anda upload" name="source_ext">
-            </div>
-            <div class="col-md-12 form-container">
-            	<label>Tipe File</label><br>
-            	<select class="selectpicker" name="file_target" id="file_target">
-    				<option value="jpg">JPG</option>
+      	</select>
+      </div>
+      <div class="col-md-12 form-container">
+      	<label>Input File</label>
+      	<input type="file" name="input_file" class="form-control">
+      </div>
+      <div class="col-md-12 form-container">
+          <label>Format File</label><br>
+          <input type="text" class="form-control" placeholder="Masukkan format File yang anda upload" name="source_ext">
+      </div>
+      <div class="col-md-12 form-container">
+      	<label>Tipe File</label><br>
+      	<select class="selectpicker" name="file_target" id="file_target">
+    			<option value="jpg">JPG</option>
 					<option value="png">PNG</option>
 					<option value="gif">GIF</option>
 					<option value="tif">TIF</option>
@@ -39,28 +39,33 @@
 					<option value="ico">ICO</option>
 					<option value="webp">WEBP</option>
 					<option value="psd">PSD</option>		
-            	</select>
-            </div>
+      	</select>
+      </div>
 			<div id="conversion_var">
 				<div class="col-md-12 form-container row">
 					<label>Resolution</label>
 					<div class="col-md-6">
-						<input type="text" name="width_reso" placeholder="Width Resolution">
+						<input type="text" name="width_reso" placeholder="Width Resolution" min="0" max="2000">
 					</div>
 					<div class="col-md-6">
-						<input type="text" name="height_reso" placeholder="Height Resolution">
+						<input type="text" name="height_reso" placeholder="Height Resolution" min="0" max="2000">
 					</div>
 				</div>
-				<div class="col-md-12 form-container">
-					<label>Color Depth</label>
-					<input type="text" name="col_depth" placeholder="Image's Color Depth, e.g : 8 / 256/ 4">
-				</div>
+	      <div class="col-md-12 form-container">
+	      	<label>Color Depth (in bit)</label><br>
+	      	<select class="selectpicker" name="col_depth" id="col_depth">
+	    			<option value="1">1</option>
+						<option value="2">2</option>
+						<option value="4">4</option>
+						<option value="8">8</option>
+						<option value="16">16</option>
+	      	</select>
+	      </div>
 				<div class="col-md-12 form-container">
 					<label>Conversion Rate</label>
-					<input type="number" name="conv_rate" placeholder="Conversion/Compression rate in percent">
+					<input type="number" name="conv_rate" placeholder="Conversion/Compression rate in percent" min="1" max="100">
 				</div>
 			</div>
-
 		<br><br>
 		<button type="submit" class="btn btn-success">Convert!!</button>
 		</div>
@@ -83,19 +88,25 @@
 				var_code = `<div class="col-md-12 form-container row">
 					<label>Resolution</label>
 						<div class="col-md-6">
-							<input type="text" name="width_reso" placeholder="Width Resolution">
+							<input type="text" name="width_reso" placeholder="Width Resolution" min="0" max="2000">
 						</div>
 						<div class="col-md-6">
-							<input type="text" name="height_reso" placeholder="Height Resolution">
+							<input type="text" name="height_reso" placeholder="Height Resolution" min="0" max="2000">
 						</div>
 					</div>
-					<div class="col-md-12 form-container">
-						<label>Color Depth</label>
-						<input type="text" name="col_depth" placeholder="Image's Color Depth, e.g : 8 / 256/ 4">
-					</div>
+		      <div class="col-md-12 form-container">
+		      	<label>Color Depth</label><br>
+		      	<select class="selectpicker" name="col_depth" id="col_depth">
+		    			<option value="1">1</option>
+							<option value="2">2</option>
+							<option value="4">4</option>
+							<option value="8">8</option>
+							<option value="16">16</option>
+		      	</select>
+		      </div>
 					<div class="col-md-12 form-container">
 						<label>Conversion Rate</label>
-						<input type="number" name="conv_rate" placeholder="Conversion/Compression rate in percent">
+						<input type="number" name="conv_rate" placeholder="Conversion/Compression rate in percent" min="1" max="100">
 					</div>`;
 			}
 			else if(type_src == 'snd')
